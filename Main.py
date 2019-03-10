@@ -11,13 +11,11 @@ img = cv2.imread(filename)
 
 
 text = pt.image_to_string(img, lang="eng")
-#comment out below line if you are giving text via ocr and give string(ocr of image) as input
-# text= input()  
 
 
 
-# print(text.lower())
-# different type of dictionary can be deined for different report, this is just sample work
+
+
 defined_dict = {'Hospital Name': ['Hospital Name', 'Hospital_Name',
                                 'hospital name'],
               'Hospital Address': ['Address', 'city', 'Hospital Address'],
@@ -41,8 +39,8 @@ defined_dict = {'Hospital Name': ['Hospital Name', 'Hospital_Name',
 
 result_dict = defined_dict
 result_dict = result_dict.fromkeys(result_dict, '')
-for key in defined_dict.keys():  # iterating the keys of dict
-    for similar_keys in defined_dict[key]:  # iterating every element in list
+for key in defined_dict.keys():  
+    for similar_keys in defined_dict[key]:  
         q = 0
         para = [similar_keys.lower()+r":(.*) ",similar_keys.lower()+r" : (.*) ",similar_keys.lower()
         +r": (.*)",similar_keys.lower()+r": (.*)",
@@ -50,10 +48,8 @@ for key in defined_dict.keys():  # iterating the keys of dict
              similar_keys.lower()+r"\n\n(.*)", similar_keys.lower()+r": (.*)" ]  #tring to find string matches and its reponses this just written on basis of observing possibilities of ocr
         for target in para:
             
-            #MATCHING REG EXPRESSION    
             match = re.search(target, text.lower())
             if match:
-                # print(match, "match")
                 result = match.group(1)
                 q = 1
                 result_dict[key] = result
