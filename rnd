@@ -1,0 +1,63 @@
+import pytesseract as pt
+import re
+import pandas as pd
+import cv2
+import numpy as np
+from matplotlib import pyplot as plt
+
+from PIL import Image
+
+img1 = Image.open('/root/regex_try/DS_Sample.jpg')
+
+text = pt.image_to_string(img1)
+
+print(text)
+
+Fieldnames_dict = {'Hospital Name':['Hospital Name', 'Hospital_Name', 
+'hospital name'],
+'Hospital Address':['Address', 'city', 'Hospital Address'],
+'Patient Name' : ['Name', 'Patient_Name', 'Patient Name', 'patient name'],
+'Address' : ['Patient Address', 'Address','Amy“'],
+'Age' : ['Age', 'age'],
+'Sex': ['Sex', 'sex', 'gender', 'Gender'],
+'Doctor Name' : ['Doctor Name', 'doctor name', 'doctor', 'treating doctor', 
+'Consultants','CONSULTANT','Consultant Name'],
+'Inpatient Number' :['Inpatient Number', 'IP Number'],
+'Admission Date' : ['Date of Admission', 'Admitted Date', 'D.0.A'],
+'Discharge Date' : ['Date of Discharge', 'Discharged Date', 'D.0.D'],
+'Diagnosis' : ['Diagnosis', 'Final Diagnosis', 'Principal/Secondary 
+ Diagnosis'],
+'Treatment Given' : ['Treatment Given', 'On Examination', 'Examination'],
+'Follow up' : ['Follow Up', 'Follow up', 'Review & Advise', 'Condition on 
+ Discharge', 'Advise on Discharge'],
+'Summary' : ['Summary', 'Past Treatment Given'],
+'Bed No' : ['Bed Number', 'Bed / Ward Details'],
+'SS Number' : ['SS Number', 'SS No.'],
+'UHID Number' : ['UHID Number', 'UHID No'],
+'MR Number' : ['MR No', 'MR Number','MRNO '],
+}
+
+def preprocess_formtext(field_dict,text):
+   values_dict=field_dict
+   values_dict=values_dict.fromkeys(values_dict, '')
+ for i in field_dict.keys(): #reaching the keys of dict
+    for x in field_dict[i]: #reaching every element in tuples
+        q=0 
+        p=[x.upper()+r":(.*) ",x.upper()+r" : (.*) ",x.upper()+r": (.*)",x.upper()+r": (.*)"]
+        for j in p:
+            #print(j)
+            match = re.search(j, text)
+            if match:
+                result = match.group(1)
+                q=1
+                values_dict[i]=result
+                break
+            else:
+                result = ""
+        if q==1:
+            break
+return values_dict
+
+values_dict=preprocess_formtext(Fieldnames_dict,text)
+
+formdata_df=pd.DataFrame([values_dict]) 
